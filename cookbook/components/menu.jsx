@@ -1,121 +1,72 @@
 import React from 'react';
-import Menu from 'react-metismenu';
-import Navbar from 'react-navbar';
+import { connect } from 'react-redux';
+import { push as Menu } from 'react-burger-menu';
 
-import 'react-metismenu/dist/react-metismenu-standart.css'
+import { toggleAlerts } from '../actions/alerts';  
 
-const MENU_CONTENT = [
-	{
-		icon: 'fa-beer',
-		label: 'beer',
-		to: 'https://google.com'
-	},
-	{
-		icon: 'fa-bars;',
-		label: 'select',
-		content: [
-			{
-				icon: 'fa-book',
-				label: 'book',
-				content: [
-					{
-						icon: 'fa-book',
-						label: 'book',
-						to: "http:google.com"
-					}
-				]
-			}
-		]
-	},
-	{
-		icon: 'fa-algo',
-		label: 'algo',
-		to: 'https://google.com'
-	},
-	{
-		icon: 'fa-algo',
-		label: 'algo',
-		content: [
-			{
-				icon: 'fa-book',
-				label: 'book',
-				content: [
-					{
-						icon: 'fa-book',
-						label: 'book',
-						to: "http:google.com"
-					}
-				]
-			}
-		]
-	},
-]
 
-const NBmenuItems = [
-	{
-		title: 'menu.dd1',
-		items: [
-			{
-				title: 'menu.i11',
-				href: 'http://google.com'
-			},
-			{
-				title: 'menu.i12',
-				href: 'http://google.com'
-			}
-		]
-	},
-	{
-		title: 'menu.i1',
-		href: "http://google.com"
-	},
-	{
-		title: 'menu.i2',
-		href: 'http://www.dubalu.com'
+const menuStyles = {
+    bmBurgerButton: { position: 'fixed', width: '36px', height: '30px', left: '36px', top: '36px' },
+    bmBurgerBars: { background: '#373a47' },
+    bmCrossButton: { height: '24px', width: '24px' },
+    bmCross: { background: '#bdc3c7' },
+    bmMenu: { background: '#373a47' },
+    bmMorphShape: { fill: '#373a47' },
+    bmItemList: { color: '#b8b7ad', padding: '0.8em' },
+    bmOverlay: { background: 'rgba(0, 0, 0, 0.3)'}
+}
+
+const linksStyle = {
+	color: 'orange',
+	padding: '0.8em',
+    display: 'block',
+	borderBottom: '1px solid #1c1c1c',
+	boxShadow: '0 1px 0 rgba(255, 255, 255, 0.1)',
+}
+
+
+const MenuButton = (props) => {
+	const handleClick = () => {
+		props.dispatch(toggleAlerts(!props.isOpen));
 	}
-]
 
-const NBsecundaryMenuItems = [
-	{
-		title: 'menu.d22',
-		items: [
-			{
-				title: 'menu.i21',
-				href: 'http://google.com'
-			},
-			{
-				title: 'menu.i22',
-				href: 'http://google.com'
-			}
-		]
-	},
-	{
-		title: 'menu.i3',
-		href: 'http://dubalu.com'
-	}
-]
-
-const messages = {
-	menu: {
-		dd1: 'Drop-down-1', i11: 'Item-1-1', i12: 'Item-1-2',
-		i1: 'Item-1', i2: 'Item-2', i3: 'Item-3',
-		dd2: 'Drop-down-2', i21: 'Item-2-1', i22: 'Item-2-2',
-	},
-}
-
-
-export const MenuBar = () => {
-	return(
-		<div className='col-md-2'>
-			<Menu content={ MENU_CONTENT } activateLinkFromLocation />
-		</div>
+	return (
+		<a onClick={ handleClick.bind(this)} href="javascript:;">
+			<i className="fa fa-list fa-2x" />
+		</a>
 	);
-}
+};
 
-export const NavBar = () => {
+export const AlertsMenuButton = connect( store => ({
+	isOpen: store.alerts
+}))(MenuButton);
+
+
+const AlertsBurgerMenu = (props) => {
+
 	return(
-		<div>
-			<Navbar menuItems={ NBmenuItems } secondaryMenuItems={ NBsecundaryMenuItems } messages= { messages } />
-		</div>
+		<Menu
+		pageWrapId={ "cuerpo" }
+		outerContainerId={ "container" }
+		isOpen={props.isOpen} 
+		width={280}
+		customBurgerIcon={ false }
+		customCrossIcon={ false }
+		right
+		onStateChange={ (state) => {
+			if( state.isOpen !== props.isOpen){
+				props.dispatch(toggleAlerts(state.isOpen))
+			}	
+		}}
+		styles={ menuStyles }
+		>
+			<a href='#' styles={ linksStyle }> <i className='fa fa-plus-square-o'/><span><strong> Add Recipe</strong></span></a>
+			<a href='#' styles={ linksStyle }> <i className='fa fa-plus-square-o'/><span><strong> Add Ingredient</strong></span></a>
+			<a href='#' styles={ linksStyle }> <i className='fa fa-plus-square-o'/><span><strong> Show Ingredients</strong></span></a>
+		</Menu>
 	);
-}
+};
+
+export const AlertsMenu = connect(store => ({
+	isOpen: store.alerts
+}))(AlertsBurgerMenu);

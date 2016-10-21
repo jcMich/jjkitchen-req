@@ -1,9 +1,26 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { connect, Provider } from 'react-redux';
+import thunkMiddleware from 'redux-thunk';
+import promise from 'redux-promise';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+
 import axios from 'axios'
 
 import { RecipesList } from './components/recipes_list'
-import { MenuBar, NavBar } from './components/menu';
+import { AlertsMenu, AlertsMenuButton } from './components/menu';
+import { AlertsReducer } from './reducers/alerts';
+
+
+const reducers = combineReducers({
+	alerts: AlertsReducer
+});
+
+const store = createStore(
+	reducers, applyMiddleware(thunkMiddleware, promise)
+);
+
+
 
 export class App extends Component {
 	constructor(props){
@@ -20,13 +37,18 @@ export class App extends Component {
 	render(){
 		return (
 			<div>
-				<MenuBar />
-				{/*<NavBar />*/}
-				{/*<RecipesList recipes={this.state.recipes} />*/}
+				<RecipesList recipes={this.state.recipes} />
 			</div>
 		);
 	}
 }
 
+ReactDOM.render(<Provider store={ store }>
+	<AlertsMenu />
+</Provider>, document.getElementById('page'))
 
-ReactDOM.render(<App />, document.getElementById('container'))
+ReactDOM.render(<Provider store={ store }>
+	<AlertsMenuButton />
+</Provider>,document.getElementById('menu-button'))
+
+ReactDOM.render(<App />, document.getElementById('cuerpo'))
